@@ -54,4 +54,8 @@ unsigned int plat_ls_calc_core_pos(u_register_t mpidr);
 /* others */
 unsigned int plat_ls_get_cluster_core_count(u_register_t mpidr);
 
+#ifdef SD_BOOT
+int sd_load_fip_image(void);
+#endif
+
 #endif /* __PLAT_LS_H__ */

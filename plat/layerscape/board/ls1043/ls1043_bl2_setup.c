@@ -26,6 +26,10 @@ void bl2_platform_setup(void)
 	VERBOSE("CS0_BNDS = %llx\n", mmio_read_32(0x1080000 + 0x000));
 	mmio_write_32(0x1080000 + 0x000, 0x7f000000);
 	VERBOSE("CS0_BNDS = %llx\n", mmio_read_32(0x1080000 + 0x000));
+#ifdef	SD_BOOT
+	INFO("loading FIP from sd\n");
+	sd_load_fip_image();
+#endif
 }
 
 void bl2_el3_early_platform_setup(u_register_t arg1, u_register_t arg2,

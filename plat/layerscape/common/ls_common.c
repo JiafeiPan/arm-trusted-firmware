@@ -23,7 +23,9 @@ const mmap_region_t *plat_ls_get_mmap(void);
  */
 #ifdef IMAGE_BL2
 const mmap_region_t plat_ls_mmap[] = {
+#ifdef	NOR_BOOT
 	LS_MAP_FLASH0_RW,
+#endif
 	LS_MAP_CCSR,
 	LS_MAP_NS_DRAM,
 	LS_MAP_TSP_SEC_MEM,
