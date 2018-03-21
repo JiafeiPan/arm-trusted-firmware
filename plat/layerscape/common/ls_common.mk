@@ -19,6 +19,9 @@ LOAD_IMAGE_V2			:=	1
 # Use generic OID definition (tbbr_oid.h)
 USE_TBBR_DEFS			:=	1
 
+BL2_AT_EL3			:=	1
+
+BL2_IN_XIP_MEM			:=	1
 
 COLD_BOOT_SINGLE_CPU		:=	1
 
@@ -30,14 +33,6 @@ PLAT_BL_COMMON_SOURCES	+=	plat/layerscape/common/${ARCH}/ls_helpers.S		\
 include lib/xlat_tables_v2/xlat_tables.mk
 
 PLAT_BL_COMMON_SOURCES	+=	${XLAT_TABLES_LIB_SRCS}
-
-BL1_SOURCES		+=			\
-				drivers/io/io_fip.c				\
-				drivers/io/io_memmap.c				\
-				drivers/io/io_storage.c				\
-				plat/layerscape/common/ls_timer.c			\
-				plat/layerscape/common/ls_bl1_setup.c			\
-				plat/layerscape/common/ls_io_storage.c
 
 BL2_SOURCES		+=	drivers/io/io_fip.c				\
 				drivers/io/io_memmap.c				\

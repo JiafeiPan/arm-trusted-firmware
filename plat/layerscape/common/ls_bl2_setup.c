@@ -10,16 +10,12 @@
 #include "ls_16550.h"
 #include "plat_ls.h"
 #include "ls_def.h"
+#include "../../../bl2/bl2_private.h"
 
 /* Data structure which holds the extents of the trusted SRAM for BL2 */
 static meminfo_t bl2_tzram_layout __aligned(CACHE_WRITEBACK_GRANULE);
 
-/*******************************************************************************
- * BL1 has passed the extents of the trusted SRAM that should be visible to BL2
- * in x0. This memory layout is sitting at the base of the free trusted SRAM.
- * Copy it to a safe location before its reclaimed by later BL2 functionality.
- ******************************************************************************/
-void ls_bl2_early_platform_setup(meminfo_t *mem_layout)
+void ls_bl2_early_platform_setup(void)
 {
 	static console_ls_16550_t console;
 
@@ -27,8 +23,9 @@ void ls_bl2_early_platform_setup(meminfo_t *mem_layout)
 	console_ls_16550_register(LS_TF_UART_BASE, LS_TF_UART_CLOCK,
 			       LS_TF_UART_BAUDRATE, &console);
 
-	/* Setup the BL2 memory layout */
-	bl2_tzram_layout = *mem_layout;
+	/* Allow BL2 to see the whole Trusted RAM */
+	bl2_tzram_layout.total_base = LS_SRAM_BASE;
+	bl2_tzram_layout.total_size = LS_SRAM_SIZE;
 
 	/* Initialise the IO layer and register platform IO devices */
 	plat_ls_io_setup();
@@ -43,9 +40,15 @@ void ls_bl2_plat_arch_setup(void)
 	ls_setup_page_tables(bl2_tzram_layout.total_base,
 			      bl2_tzram_layout.total_size,
 			      BL_CODE_BASE,
+#if BL2_IN_XIP_MEM
+			      BL2_CODE_END,
+			      BL2_RO_DATA_BASE,
+			      BL2_RO_DATA_END
+#else
 			      BL_CODE_END,
 			      BL_RO_DATA_BASE,
 			      BL_RO_DATA_END
+#endif
 #if USE_COHERENT_MEM
 			      , BL_COHERENT_RAM_BASE,
 			      BL_COHERENT_RAM_END
@@ -55,11 +58,11 @@ void ls_bl2_plat_arch_setup(void)
 #ifdef AARCH32
 	enable_mmu_secure(0);
 #else
-	enable_mmu_el1(0);
+	enable_mmu_el3(0);
 #endif
 }
 
-void bl2_plat_arch_setup(void)
+void bl2_el3_plat_arch_setup(void)
 {
 	ls_bl2_plat_arch_setup();
 }

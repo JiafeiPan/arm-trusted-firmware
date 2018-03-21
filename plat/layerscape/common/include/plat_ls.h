@@ -10,12 +10,8 @@
 #include <sys/types.h>
 #include <cpu_data.h>
 
-/* BL1 utility functions */
-void ls_bl1_platform_setup(void);
-void ls_bl1_early_platform_setup(void);
-
 /* BL2 utility functions */
-void ls_bl2_early_platform_setup(meminfo_t *mem_layout);
+void ls_bl2_early_platform_setup(void);
 uint32_t ls_get_spsr_for_bl32_entry(void);
 uint32_t ls_get_spsr_for_bl33_entry(void);
 

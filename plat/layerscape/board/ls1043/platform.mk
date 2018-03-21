@@ -36,19 +36,12 @@ LS1043_CPU_LIBS			:=	lib/cpus/${ARCH}/aem_generic.S
 
 LS1043_CPU_LIBS			+=	lib/cpus/aarch64/cortex_a53.S
 
-BL1_SOURCES			+= 	plat/layerscape/board/ls1043/ls1043_bl1_setup.c		\
-					plat/layerscape/board/ls1043/ls1043_err.c			\
-					drivers/delay_timer/delay_timer.c \
-
-BL1_SOURCES     		+=	plat/layerscape/board/ls1043/${ARCH}/ls1043_helpers.S \
-					${LS1043_CPU_LIBS}					\
-					${LS1043_INTERCONNECT_SOURCES}		\
-					$(LS1043_SECURITY_SOURCES)
-
-
 BL2_SOURCES			+=	drivers/delay_timer/delay_timer.c		\
+					plat/layerscape/board/ls1043/${ARCH}/ls1043_helpers.S \
 					plat/layerscape/board/ls1043/ls1043_bl2_setup.c		\
 					plat/layerscape/board/ls1043/ls1043_err.c			\
+					${LS1043_CPU_LIBS}					\
+					${LS1043_INTERCONNECT_SOURCES}		\
 					${LS1043_SECURITY_SOURCES}
 
 

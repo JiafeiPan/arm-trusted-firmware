@@ -5,21 +5,43 @@
  */
 
 #include <mmio.h>
+#include <cci.h>
 #include <debug.h>
 #include "plat_ls.h"
 
-void bl2_early_platform_setup2(u_register_t arg0, u_register_t arg1,
-		u_register_t arg2, u_register_t arg3)
+static const int cci_map[] = {
+	PLAT_LS1043_CCI_CLUSTER0_SL_IFACE_IX
+};
+
+void bl2_platform_setup(void)
 {
-	ls_bl2_early_platform_setup((meminfo_t *)arg1);
+	NOTICE(FIRMWARE_WELCOME_STR_LS1043_BL2);
 
 	/*
 	 * Initialize system level generic timer for Layerscape Socs.
 	 */
 	ls_delay_timer_init();
+
+	/* TODO: remove these DDR code */
+	VERBOSE("CS0_BNDS = %llx\n", mmio_read_32(0x1080000 + 0x000));
+	mmio_write_32(0x1080000 + 0x000, 0x7f000000);
+	VERBOSE("CS0_BNDS = %llx\n", mmio_read_32(0x1080000 + 0x000));
 }
 
-void bl2_platform_setup(void)
+void bl2_el3_early_platform_setup(u_register_t arg1, u_register_t arg2,
+				  u_register_t arg3, u_register_t arg4)
 {
-	NOTICE(FIRMWARE_WELCOME_STR_LS1043_BL2);
+	ls_bl2_early_platform_setup();
+
+	/*
+	 * Initialize Interconnect for this cluster during cold boot.
+	 * No need for locks as no other CPU is active.
+	 */
+	cci_init(PLAT_LS1043_CCI_BASE, cci_map, ARRAY_SIZE(cci_map));
+
+	/*
+	 * Enable coherency in Interconnect for the primary CPU's cluster.
+	 */
+	cci_enable_snoop_dvm_reqs(MPIDR_AFFLVL1_VAL(read_mpidr()));
+
 }

@@ -65,22 +65,11 @@ endfunc plat_ls_calc_core_pos
 	 * -----------------------------------------------------
 	 */
 func plat_crash_console_init
-#if defined(IMAGE_BL1)
-	/*
-	 * BL1 code can possibly crash so early that the data segment is not yet
-	 * accessible. Don't risk undefined behavior by trying to run the normal
-	 * console framework. Platforms that want to debug BL1 will need to
-	 * override this with custom functions that can run from registers only.
-	 */
-	mov	x0, #0
-	ret
-#else	/* IMAGE_BL1 */
 	mov	x3, x30
 	mov	x0, #CONSOLE_FLAG_CRASH
 	bl	console_switch_state
 	mov	x0, #1
 	ret	x3
-#endif
 endfunc plat_crash_console_init
 
 	/* -----------------------------------------------------

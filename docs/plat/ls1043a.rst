@@ -39,8 +39,8 @@ Boot Sequence
 =============
 
 
-Bootrom --> TF-A BL1 --> TF-A BL2 --> TF-A BL1 --> TF-A BL31
---> BL32(Tee OS) --> TF-A BL31 --> BL33(u-boot) --> Linux kernel
+Bootrom --> TF-A BL2 (el3)  --> TF-A BL31 --> BL32(Tee OS)
+	--> TF-A BL31 --> BL33(u-boot) --> Linux kernel
 
 
 How to build
@@ -55,11 +55,11 @@ Build Procedure
 
 -  Build TF-A for Nor boot
 
-   Build bl1:
+   Build bl2:
 
    .. code:: shell
 
-       CROSS_COMPILE=aarch64-linux-gnu- make PLAT=ls1043 bl1
+       CROSS_COMPILE=aarch64-linux-gnu- make PLAT=ls1043 bl2
 
    Build fip:
 
@@ -75,7 +75,7 @@ Deploy TF-A Images
 
    .. code:: shell
 
-       => tftp 82000000  bl1.bin
+       => tftp 82000000  bl2.bin
        => pro off all;era 64100000 +$filesize;cp.b 82000000 64100000 $filesize
 
        => tftp 82000000  fip.bin

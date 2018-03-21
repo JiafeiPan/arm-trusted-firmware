@@ -12,7 +12,6 @@
 #include <utils.h>
 #include "ls_def.h"
 
-#define FIRMWARE_WELCOME_STR_LS1043	"Welcome to LS1043 BL1 Phase\n"
 #define FIRMWARE_WELCOME_STR_LS1043_BL2	"Welcome to LS1043 BL2 Phase\n"
 #define FIRMWARE_WELCOME_STR_LS1043_BL31 "Welcome to LS1043 BL31 Phase\n"
 #define FIRMWARE_WELCOME_STR_LS1043_BL32 "Welcome to LS1043 BL32 Phase, TSP\n"
@@ -76,56 +75,25 @@
 #define PLAT_LS_FIP_MAX_SIZE		0x4000000
 
 /* Memory Layout */
-
-#define BL1_RO_BASE			PLAT_LS_TRUSTED_ROM_BASE
-#define BL1_RO_LIMIT			(PLAT_LS_TRUSTED_ROM_BASE	\
+#define BL2_RO_BASE			PLAT_LS_TRUSTED_ROM_BASE
+#define BL2_RO_LIMIT			(PLAT_LS_TRUSTED_ROM_BASE	\
 					 + PLAT_LS_TRUSTED_ROM_SIZE)
 #define PLAT_LS_FIP_BASE		0x60120000
 
-#ifdef LS_BL2_IN_OCRAM
-/* BL2 is in OCRAM */
-#define PLAT_LS_MAX_BL1_RW_SIZE		(52 * 1024)		/* 52K */
 #define PLAT_LS_MAX_BL31_SIZE		(64 * 1024)		/* 64K */
-#define PLAT_LS_MAX_BL2_SIZE		(44 * 1024)		/* 44K */
-/* Reserve memory in OCRAM for BL31 Text and ROData segment */
-#define BL31_TEXT_RODATA_SIZE		(32 * 1024)		/* 32K */
-#else /* LS_BL2_IN_OCRAM */
-/* BL2 in DDR */
-#define PLAT_LS_MAX_BL1_RW_SIZE		(64 * 1024)		/* 64K */
-#define PLAT_LS_MAX_BL31_SIZE		(64 * 1024)		/* 64K */
-#define PLAT_LS_MAX_BL2_SIZE		(1 * 1024 * 1024)	/* 1M */
-#endif /* LS_BL2_IN_OCRAM */
+#define PLAT_LS_MAX_BL2_SIZE		(64 * 1024)		/* 64K */
+
 /*
  * Put BL31 at the start of OCRAM.
  */
 #define BL31_BASE			LS_SRAM_BASE
 #define BL31_LIMIT			(LS_SRAM_BASE + PLAT_LS_MAX_BL31_SIZE)
 
-#ifdef LS_BL2_IN_OCRAM
 /*
  * BL2 follow BL31 Text and ROData region.
  */
-#define BL2_BASE			(BL31_BASE + BL31_TEXT_RODATA_SIZE)
-#define BL2_LIMIT			(BL2_BASE + PLAT_LS_MAX_BL2_SIZE)
-
-#else
-/*
- * BL2 in DDR memory.
- */
-#define BL2_BASE			LS_BL2_DDR_BASE
-#define BL2_LIMIT			(BL2_BASE + PLAT_LS_MAX_BL2_SIZE)
-
-#endif
-
-/*
- * Put BL1 RW at the top of the Trusted SRAM.
- */
-#ifdef LS_BL2_IN_OCRAM
-#define BL1_RW_BASE			BL2_LIMIT
-#else
-#define BL1_RW_BASE			BL31_LIMIT
-#endif
-#define BL1_RW_LIMIT			LS_SRAM_LIMIT
+#define BL2_RW_BASE			BL31_LIMIT
+#define BL2_RW_LIMIT			LS_SRAM_LIMIT
 
 /* Put BL32 in secure memory */
 #define BL32_BASE		LS_SECURE_DRAM_BASE
@@ -188,11 +156,7 @@
 #define CONFIG_SYS_FSL_CSU_ADDR		(CONFIG_SYS_IMMR + 0x00510000)
 
 /* Size of cacheable stacks */
-#if defined(IMAGE_BL1)
-#define PLATFORM_STACK_SIZE		0x440
-#define MAX_MMAP_REGIONS		6
-#define MAX_XLAT_TABLES			4
-#elif defined(IMAGE_BL2)
+#if defined(IMAGE_BL2)
 #define PLATFORM_STACK_SIZE		0x400
 #define MAX_MMAP_REGIONS		8
 #define MAX_XLAT_TABLES			6
